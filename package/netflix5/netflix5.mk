@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NETFLIX5_VERSION = c4da479ff9aae9cf03400b8c2b402d550d272fc3
+NETFLIX5_VERSION = d45379c1b9e145d416a8e1ed68b61d9686697a6f
 
 NETFLIX5_SITE = git@github.com:Metrological/netflix.git
 NETFLIX5_SITE_METHOD = git
@@ -37,10 +37,14 @@ NETFLIX5_CONF_OPTS = \
 	-DDPI_IMPLEMENTATION=sink-interface \
 	-DDPI_SINK_INTERFACE_IMPLEMENTATION=gstreamer \
 	-DBUILD_DEBUG=OFF -DNRDP_HAS_GIBBON_QA=ON -DNRDP_HAS_MUTEX_STACK=ON -DNRDP_HAS_OBJECTCOUNT=ON \
-	-DBUILD_PRODUCTION=OFF -DNRDP_HAS_QA=ON -DBUILD_SMALL=OFF -DBUILD_SYMBOLS=ON -DNRDP_HAS_TRACING=OFF \
+	-DBUILD_PRODUCTION=OFF -DNRDP_HAS_QA=OFF -DBUILD_SMALL=OFF -DBUILD_SYMBOLS=ON -DNRDP_HAS_TRACING=OFF \
 	-DNRDP_CRASH_REPORTING=breakpad \
 	-DDPI_SINK_INTERFACE_OVERRIDE_APPBOOT=ON \
 	-DGIBBON_GRAPHICS_GL_WSYS=egl
+
+NETFLIX5_CONF_OPTS += \
+	-DDPI_IMPLEMENTATION=gstreamer \
+	-DDPI_DRM=playready2.5
 
 ifeq ($(BR2_PACKAGE_NETFLIX5_LIB), y)	
 NETFLIX5_INSTALL_STAGING = YES
@@ -241,14 +245,14 @@ endef
 endif
 
 define NETFLIX5_INSTALL_STAGING_CMDS
-	make -C $(@D)/netflix install
+	#make -C $(@D)/netflix install
 	$(INSTALL) -m 755 $(@D)/netflix/src/platform/gibbon/libnetflix.so $(STAGING_DIR)/usr/lib
 	$(INSTALL) -D package/netflix5/netflix.pc $(STAGING_DIR)/usr/lib/pkgconfig/netflix.pc
 	mkdir -p $(STAGING_DIR)/usr/include/netflix/src
 	mkdir -p $(STAGING_DIR)/usr/include/netflix/nrdbase
 	mkdir -p $(STAGING_DIR)/usr/include/netflix/nrd
 	mkdir -p $(STAGING_DIR)/usr/include/netflix/nrdnet
-	cp -Rpf $(@D)/release/include/* $(STAGING_DIR)/usr/include/netflix/
+	#cp -Rpf $(@D)/release/include/* $(STAGING_DIR)/usr/include/netflix/
 	cp -Rpf $(@D)/netflix/include/nrdbase/*.h $(STAGING_DIR)/usr/include/netflix/nrdbase/
 	cp -Rpf $(@D)/netflix/include/nrd/*.h $(STAGING_DIR)/usr/include/netflix/nrd/
 	cp -Rpf $(@D)/netflix/include/nrdnet/*.h $(STAGING_DIR)/usr/include/netflix/nrdnet/
@@ -265,6 +269,9 @@ define NETFLIX5_INSTALL_STAGING_CMDS
 	find $(STAGING_DIR)/usr/include/netflix/nrdbase/ -name "*.h" -exec sed -i "s/^#include \"\.\.\/\.\.\//#include \"/g" {} \;
 	find $(STAGING_DIR)/usr/include/netflix/nrd/ -name "*.h" -exec sed -i "s/^#include \"\.\.\/\.\.\//#include \"/g" {} \;
 	find $(STAGING_DIR)/usr/include/netflix/nrdnet/ -name "*.h" -exec sed -i "s/^#include \"\.\.\/\.\.\//#include \"/g" {} \;
+
+        mkdir -p $(STAGING_DIR)/usr/include/netflix/3rdparty/utf8/
+        cp -Rpf $(@D)/netflix/3rdparty/utf8/* $(STAGING_DIR)/usr/include/netflix/3rdparty/utf8/
 
 	mkdir -p $(TARGET_DIR)/root/Netflix
 	cp -r $(@D)/netflix/src/platform/gibbon/resources/gibbon/fonts $(TARGET_DIR)/root/Netflix
