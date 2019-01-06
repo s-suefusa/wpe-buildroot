@@ -165,7 +165,7 @@ define NODEJS_INSTALL_MODULES
 	# If you're having trouble with module installation, adding -d to the
 	# npm install call below and setting npm_config_rollback=false can both
 	# help in diagnosing the problem.
-	$(NPM) install -g $(NODEJS_MODULES_LIST)
+	$(NPM) install -g --unsafe-perm $(NODEJS_MODULES_LIST)
 endef
 endif
 
